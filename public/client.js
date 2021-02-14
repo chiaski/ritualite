@@ -5,7 +5,7 @@ const acts = [];
 
 // define variables that reference elements on our page
 const form = document.forms[0];
-const dreamInput = $("select[name=item] option:selected").text();
+
 const dreamsList = document.getElementById("rituals");
 const clearButton = document.querySelector('#clear-dreams');
 
@@ -28,9 +28,13 @@ const appendNewDream = dream => {
 // listen for the form to be submitted and add a new dream when it is
 form.onsubmit = event => {
   // stop our form submission from refreshing the page
+
   event.preventDefault();
+var dreamInput = "i put the " + $("select[name=item_1] option:selected").val() + " and " + $("select[name=item_2] option:selected").val() + " by " + $("select[name=action] option:selected").val() + " for " + $("select[name=time] option:selected").val();
+  
 
   const data = { dream: dreamInput };
+  console.log(dreamInput);
 
   fetch("/addDream", {
     method: "POST",
@@ -44,14 +48,17 @@ form.onsubmit = event => {
   // get dream value and add it to the list
   acts.push(dreamInput);
   appendNewDream(dreamInput);
+  
+  refresh();
 
 };
 
-clearButton.addEventListener('click', event => {
-  fetch("/clearDreams", {})
-    .then(res => res.json())
-    .then(response => {
-      console.log("cleared dreams");
-    });
-  dreamsList.innerHTML = "";
-});
+// Remove all
+// clearButton.addEventListener('click', event => {
+//   fetch("/clearDreams", {})
+//     .then(res => res.json())
+//     .then(response => {
+//       console.log("cleared dreams");
+//     });
+//   dreamsList.innerHTML = "";
+// });
