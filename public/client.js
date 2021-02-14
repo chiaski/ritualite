@@ -9,56 +9,28 @@ const form = document.forms[0];
 const dreamsList = document.getElementById("rituals");
 const clearButton = document.querySelector('#clear-dreams');
 
-// request the dreams from our app's sqlite database
-fetch("/getDreams", {})
-  .then(res => res.json())
-  .then(response => {
-    response.forEach(row => {
-      appendNewDream(row.dream);
+
+  
+
+
+$(function() {
+  $.get('/rituals', function(rituals) {
+    rituals.forEach(function(ritual) {
+      $('<li></li>').text(ritual[0] + " " + ritual[1]).appendTo('#rituals');
     });
   });
 
-// a helper function that creates a list item for a given dream
-const appendNewDream = dream => {
-  const newListItem = document.createElement("li");
-  newListItem.innerText = dream;
-  dreamsList.appendChild(newListItem);
-};
-
-// listen for the form to be submitted and add a new dream when it is
-form.onsubmit = event => {
-  // stop our form submission from refreshing the page
-
-  event.preventDefault();
-var dreamInput = "i put the " + $("select[name=item_1] option:selected").val() + " and " + $("select[name=item_2] option:selected").val() + " by " + $("select[name=action] option:selected").val() + " for " + $("select[name=time] option:selected").val();
+  $('form').submit(function(event) {
+    event.preventDefault();
   
+    var dreamInput = "i put the " + $("select[name=item_1] option:selected").val() + " and " + $("select[name=item_2] option:selected").val() + " by " + $("select[name=action] option:selected").val() + " for " + $("select[name=time] option:selected").val();
+    var resultInput = $(".what").val();
 
-  const data = { dream: dreamInput };
-  console.log(dreamInput);
-
-  fetch("/addDream", {
-    method: "POST",
-    body: JSON.stringify(data),
-    headers: { "Content-Type": "application/json" }
-  })
-    .then(res => res.json())
-    .then(response => {
-      console.log(JSON.stringify(response));
+    $.post('/rituals?' + $.param({act:dreamInput, result:resultInput}), function() {
+      $('<li></li>').text(dreamInput + " " + resultInput).appendTo('#rituals');
+      // $('input#fName').val('');
+      // $('input#lName').val('');
+      // $('input').focus();
     });
-  // get dream value and add it to the list
-  acts.push(dreamInput);
-  appendNewDream(dreamInput);
-  
-  refresh();
-
-};
-
-// Remove all
-// clearButton.addEventListener('click', event => {
-//   fetch("/clearDreams", {})
-//     .then(res => res.json())
-//     .then(response => {
-//       console.log("cleared dreams");
-//     });
-//   dreamsList.innerHTML = "";
-// });
+  });
+});
