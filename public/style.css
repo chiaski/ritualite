@@ -1,0 +1,21 @@
+/* styles */
+/* called by your view template */
+
+* {
+  box-sizing: border-box;
+}
+
+body{
+  padding:5cw;
+}
+
+#container {
+  padding: 1em;
+  width: 100%;
+  text-align: center;
+}
+
+section {
+  position: relative;
+  bottom: 0;
+}
