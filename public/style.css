@@ -11,13 +11,16 @@ body{
 
 #container {
   padding: 1em;
-  width: 100%;
-  text-align: center;
+  width: 100vw;
+  height:100vh;
+  display:flex;
+  place-items:center;
+  justify-content:center;
+  text-align:center;
 }
 
 section {
-  position: relative;
-  bottom: 0;
+  height: auto;
 }
 
 .act{
