@@ -1,0 +1,10 @@
+#container {
+  padding: 1em;
+  width: 100%;
+  text-align: center;
+}
+
+section {
+  position: relative;
+  bottom: 0;
+}
