@@ -1,7 +1,7 @@
 
-let items = ["bible", "chemicals", "mirror", "turpentine", "plustrite", "salt", "eggs", "vinegar", "bone marrow", "windowwasher", "bleach", "gas", "vitamins", "cogs"];
+let items = ["bible", "chemicals", "mirror", "turpentine", "plustrite", "salt", "eggs", "vinegar", "bone marrow", "windowwasher", "bleach", "gas", "vitamins", "cogs", "grime", "muk", "chloroform", "clippings", "seafoam", "memories"];
 
-let actions = ["mix", "displace", "incantate", "chant", "whisk", "simmer", "wash", "watch"];
+let actions = ["mixing", "displacing them", "incantation", "chanting", "whisking", "simmering", "imbuing", "condensation", "evaporation", "washing", "merely watching"];
 
 let timers = ["an hour", "a year", "every second for ten seconds", "every time it foams", "every passing decade", "a memory", "a moment", "an epoch", "as long as you'd like", "as long as you'd need"];
 

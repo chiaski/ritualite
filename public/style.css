@@ -23,6 +23,13 @@ section {
   height: auto;
 }
 
+section.dreams{
+  background:black;
+  color: white;
+  padding:1em 0;
+  margin: 5vh 0;
+}
+
 .act{
   padding:2em;
 }
@@ -31,5 +38,9 @@ section {
 
 select{
   display: inline-block;
+  padding:.5em;
+}
+
+button[type=submit]{
   padding:.5em;
 }

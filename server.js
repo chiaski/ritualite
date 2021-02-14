@@ -2,110 +2,86 @@
 // where your node app starts
 
 // init project
-const express = require("express");
-const bodyParser = require("body-parser");
-const app = express();
-const fs = require("fs");
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
+var express = require('express');
+// setup a new database
+// persisted using async file storage
+// Security note: the database is saved to the file `db.json` on the local filesystem.
+// It's deliberately placed in the `.data` directory which doesn't get copied if someone remixes the project.
+var low = require('lowdb')
+var FileSync = require('lowdb/adapters/FileSync')
+var adapter = new FileSync('.data/db.json')
+var db = low(adapter)
+var app = express();
 
-// we've started you off with Express,
-// but feel free to use whatever libs or frameworks you'd like through `package.json`.
+// default user list
+db.defaults({ rituals: [
+      {"act":"John", "result":"Hancock"},
+      {"act":"Liz",  "result":"Smith"},
+      {"act":"Ahmed","result":"Khan"}
+    ]
+  }).write();
 
 // http://expressjs.com/en/starter/static-files.html
-app.use(express.static("public"));
-
-// init sqlite db
-const dbFile = "./.data/sqlite.db";
-const exists = fs.existsSync(dbFile);
-const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database(dbFile);
-
-// if ./.data/sqlite.db does not exist, create it, otherwise print records to console
-db.serialize(() => {
-  if (!exists) {
-    db.run(
-      "CREATE TABLE Dreams (id INTEGER PRIMARY KEY AUTOINCREMENT, dream TEXT)"
-    );
-    console.log("New table Dreams created!");
-
-    // insert default dreams
-    db.serialize(() => {
-      db.run(
-        'INSERT INTO Dreams (dream) VALUES ("Find and count some sheep"), ("Climb a really tall mountain"), ("Wash the dishes")'
-      );
-    });
-  } else {
-    console.log('Database "Dreams" ready to go!');
-    db.each("SELECT * from Dreams", (err, row) => {
-      if (row) {
-        console.log(`record: ${row.dream}`);
-      }
-    });
-  }
-});
+app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
-app.get("/", (request, response) => {
-  response.sendFile(`${__dirname}/views/index.html`);
+app.get("/", function (request, response) {
+  response.sendFile(__dirname + '/views/index.html');
 });
 
-// endpoint to get all the dreams in the database
-app.get("/getDreams", (request, response) => {
-  db.all("SELECT * from Dreams", (err, rows) => {
-    response.send(JSON.stringify(rows));
+app.get("/rituals", function (request, response) {
+  var dbUsers=[];
+  var users = db.get('rituals').value() // Find all users in the collection
+  users.forEach(function(ritual) {
+    dbUsers.push([ritual.act,ritual.result]); // adds their info to the dbUsers value
   });
+  response.send(dbUsers); // sends dbUsers back to the page
 });
 
-// endpoint to add a dream to the database
-app.post("/addDream", (request, response) => {
-  console.log(`add to dreams ${request.body.dream}`);
-
-  // DISALLOW_WRITE is an ENV variable that gets reset for new projects
-  // so they can write to the database
-  if (!process.env.DISALLOW_WRITE) {
-    const cleansedDream = cleanseString(request.body.dream);
-    db.run(`INSERT INTO Dreams (dream) VALUES (?)`, cleansedDream, error => {
-      if (error) {
-        response.send({ message: "error!" });
-      } else {
-        response.send({ message: "success" });
-      }
-    });
-  }
+// creates a new entry in the users collection with the submitted values
+app.post("/rituals", function (request, response) {
+  db.get('rituals')
+    .push({ act: request.query.act, result: request.query.result })
+    .write()
+  console.log("New ritual\n");
+  response.sendStatus(200);
 });
 
-// endpoint to clear dreams from the database
-app.get("/clearDreams", (request, response) => {
-  // DISALLOW_WRITE is an ENV variable that gets reset for new projects so you can write to the database
-  if (!process.env.DISALLOW_WRITE) {
-    db.each(
-      "SELECT * from Dreams",
-      (err, row) => {
-        console.log("row", row);
-        db.run(`DELETE FROM Dreams WHERE ID=?`, row.id, error => {
-          if (row) {
-            console.log(`deleted row ${row.id}`);
-          }
-        });
-      },
-      err => {
-        if (err) {
-          response.send({ message: "error!" });
-        } else {
-          response.send({ message: "success" });
-        }
-      }
-    );
-  }
+// removes entries from users and populates it with default users
+app.get("/reset", function (request, response) {
+  // removes all entries from the collection
+  db.get('rituals')
+  .remove()
+  .write()
+  console.log("Database cleared");
+  
+  // default users inserted in the database
+  var rituals= [
+      {"act":"John", "result":"Hancock"},
+      {"act":"Liz",  "result":"Smith"},
+      {"act":"Ahmed","result":"Khan"}
+  ];
+  
+  rituals.forEach(function(ritual){
+    db.get('rituals')
+      .push({ act: ritual.act, result: ritual.result })
+      .write()
+  });
+  console.log("Default users added");
+  response.redirect("/");
 });
 
-// helper function that prevents html/css/script malice
-const cleanseString = function(string) {
-  return string.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-};
+// removes all entries from the collection
+app.get("/clear", function (request, response) {
+  // removes all entries from the collection
+  db.get('rituals')
+  .remove()
+  .write()
+  console.log("Database cleared");
+  response.redirect("/");
+});
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, () => {
-  console.log(`Your app is listening on port ${listener.address().port}`);
+var listener = app.listen(process.env.PORT, function () {
+  console.log('Your app is listening on port ' + listener.address().port);
 });
