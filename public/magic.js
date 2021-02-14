@@ -1,9 +1,9 @@
 
 let items = ["bible", "chemicals", "mirror", "turpentine", "plustrite", "salt", "eggs", "vinegar", "bone marrow", "windowwasher", "bleach", "gas", "vitamins", "cogs"];
 
-let action = ["mix", "displace", "incantate", "chant", "whisk", "simmer", "wash", "watch"];
+let actions = ["mix", "displace", "incantate", "chant", "whisk", "simmer", "wash", "watch"];
 
-let timers = ["for an hour", "for a year", "every second for ten seconds", "every time it foams", "every passing decade"];
+let timers = ["an hour", "a year", "every second for ten seconds", "every time it foams", "every passing decade", "a memory", "a moment", "an epoch", "as long as you'd like", "as long as you'd need"];
 
 // provide options
 
@@ -33,4 +33,18 @@ function getRandom(arr, n) {
 }
 
 // items to fill
+
+function refresh(){
+  
+  $("select[name='item_1']").html("");
+  $("select[name='item_2']").html("");
+  $("select[name='action']").html("");
+  $("select[name='time']").html("");
+  
 addItems("item_1", 5, items);
+addItems("item_2", 5, items);
+addItems("action", 3, actions);
+addItems("time", 2, timers);
+}
+
+refresh();
